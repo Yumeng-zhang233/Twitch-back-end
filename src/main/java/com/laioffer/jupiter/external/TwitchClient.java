@@ -69,11 +69,13 @@ public class TwitchClient {
 
 
             }
-            HttpEntity entity = response.getEntity();
+            HttpEntity entity = response.getEntity();//通常是在http报文中获取的实体
             if (entity == null) {
                 throw new TwitchException("Failed to get result from Twitch API");
             }
-            JSONObject obj = new JSONObject(EntityUtils.toString(entity));
+            //transfer entity to JSON
+            JSONObject obj = new JSONObject(EntityUtils.toString(entity));//interprets that content as
+            // a String and returns it to you.
             return obj.getJSONArray("data").toString();
         };
             try {
@@ -119,7 +121,9 @@ public class TwitchClient {
             if(limit <= 0){
                 limit = DEFAULT_GAME_LIMIT;
             }
-            return getGameList(searchTwitch(buildGameURL(TOP_GAME_URL, "", limit)));
+            return getGameList(//String data
+                    searchTwitch(//String url
+                            buildGameURL(TOP_GAME_URL, "", limit)));
         }
     // Integrate search() and getGameList() together, returns the
     // dedicated game based on the game name.

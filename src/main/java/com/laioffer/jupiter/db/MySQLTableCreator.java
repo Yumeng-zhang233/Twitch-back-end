@@ -5,6 +5,7 @@ import java.sql.DriverManager;
 import java.sql.Statement;
 
 public class MySQLTableCreator {
+    // Run this as a Java application to reset the database.
     public static void main(String[] args){
         try{
             // Step 1 Connect to MySQL.

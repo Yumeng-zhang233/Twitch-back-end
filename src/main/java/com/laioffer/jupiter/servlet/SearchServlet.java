@@ -11,6 +11,7 @@ import java.io.IOException;
 
 @WebServlet(name = "SearchServlet", value = "/search")
 public class SearchServlet extends HttpServlet {
+//    Integrate with TwitchClient
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String gameId = request.getParameter("game_id");
@@ -25,6 +26,7 @@ public class SearchServlet extends HttpServlet {
             response.getWriter().print(
                     //map transfer to json
                     new ObjectMapper().writeValueAsString(
+                            //generate a JSON from a Java object and return the generated JSON as a string or as a byte array:
                             client.searchItems(gameId)
                     )
             );

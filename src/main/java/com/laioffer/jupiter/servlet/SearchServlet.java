@@ -1,6 +1,5 @@
 package com.laioffer.jupiter.servlet;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.laioffer.jupiter.external.TwitchClient;
 import com.laioffer.jupiter.external.TwitchException;
 
@@ -22,14 +21,8 @@ public class SearchServlet extends HttpServlet {
         TwitchClient client = new TwitchClient();
 
         try{
-            response.setContentType("application/json;charset = UTF-8");
-            response.getWriter().print(
-                    //map transfer to json
-                    new ObjectMapper().writeValueAsString(
-                            //generate a JSON from a Java object and return the generated JSON as a string or as a byte array:
-                            client.searchItems(gameId)
-                    )
-            );
+            ServletUtil.writeData(response, client.searchItems(gameId));
+
         }catch (TwitchException e){
             throw new ServletException(e);
         }

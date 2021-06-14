@@ -17,13 +17,18 @@ import java.util.Map;
 public class FavoriteServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        String userId = request.getParameter("user_id");
+
+        HttpSession session = request.getSession(false);
+            if (session == null) {
+                      response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                      return;
+                 }
+             String userId = (String) session.getAttribute("user_id");
+
         try (MySQLConnection conn = new MySQLConnection()) {
             Map<String, List<Item>> itemMap = conn.getFavoriteItems(userId);
-            response.setContentType("application/Json;charset =UTF-8");
-            response.getWriter().print(
-                    new ObjectMapper().writeValueAsString(itemMap)
-            );
+
+            ServletUtil.writeData(response, itemMap);
         } catch (MySQLException e) {
             throw new ServletException(e);
         }
@@ -33,11 +38,15 @@ public class FavoriteServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
     // Get user ID from request URL, this is a temporary solution
         // since we don’t support session now
-        String userId = request.getParameter("user_id");
-        ObjectMapper mapper = new ObjectMapper();
-        FavoriteRequestBody body = mapper.readValue(
-                request.getReader(),FavoriteRequestBody.class
-        );
+        HttpSession session = request.getSession(false);
+        if (session == null) {
+            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+             return;
+                }
+        String userId = (String) session.getAttribute("user_id");
+
+        FavoriteRequestBody body = ServletUtil.readRequestBody(FavoriteRequestBody.class, request);
+
         if(body == null){
             System.out.println("Convert Json to FavoriteRequestBody failed");
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
@@ -51,9 +60,15 @@ public class FavoriteServlet extends HttpServlet {
     @Override
     protected void doDelete(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String userId = request.getParameter("user_id");
-        ObjectMapper mapper = new ObjectMapper();
-        FavoriteRequestBody body = mapper.readValue(request.getReader(), FavoriteRequestBody.class);
+        HttpSession session = request.getSession(false);//不能创建一个新的session，如果没登录返回一个空值
+        if (session == null) {
+          response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+           return;
+         }
+       String userId = (String) session.getAttribute("user_id");
+
+        FavoriteRequestBody body = ServletUtil.readRequestBody(FavoriteRequestBody.class, request);
+
         if (body == null) {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             return;
